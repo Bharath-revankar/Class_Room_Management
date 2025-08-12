@@ -31,7 +31,9 @@ exports.createAssignment = async (req, res) => {
 
 exports.getAssignments = async (req, res) => {
   try {
-    const assignments = await Assignment.find().populate("teacher", "username");
+    const assignments = await Assignment.find()
+      .populate("teacher", "username")
+      .populate("submissions.student", "username");
     res.json(assignments);
   } catch (error) {
     res.status(500).send(error.message);

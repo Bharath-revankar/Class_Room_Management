@@ -9,6 +9,11 @@ const UserSchema = new mongoose.Schema({
     enum: ["student", "teacher", "admin"],
     default: "student",
   },
+  rollno: {
+    type: String,
+    unique: true,
+    sparse: true, // Allows multiple documents to have a null value for this field but enforces uniqueness for non-null values.
+  },
 });
 
 // Hash password before saving

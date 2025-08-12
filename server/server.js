@@ -5,7 +5,7 @@ const socketIo = require("socket.io");
 const connectDB = require("./config/db");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const path = require('path');
+const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
@@ -17,7 +17,7 @@ connectDB();
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '../client'))); // Serve static files from client folder
+app.use(express.static(path.join(__dirname, "../client"))); // Serve static files from client folder
 
 // Routes
 app.use("/api/auth", require("./routes/auth"));
