@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const loginForm = document.getElementById("loginForm");
-  const registerForm = document.getElementById("registerForm");
+  const loginForm = document.getElementById("login-form");
+  const registerForm = document.getElementById("register-form");
 
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
@@ -30,18 +30,25 @@ document.addEventListener("DOMContentLoaded", () => {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
       const role = document.getElementById("role").value;
+      const rollno = document.getElementById("rollno").value;
+
+      const body = { username, password, role };
+      if (role === "student") {
+        body.rollno = rollno;
+      }
 
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, role }),
+        body: JSON.stringify(body),
       });
 
       if (res.ok) {
         alert("Registration successful");
         window.location.href = "login.html";
       } else {
-        alert("Registration failed");
+        const errorText = await res.text();
+        alert(`Registration failed: ${errorText}`);
       }
     });
   }

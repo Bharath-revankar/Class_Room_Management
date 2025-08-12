@@ -18,6 +18,7 @@ connectDB();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "../client"))); // Serve static files from client folder
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve submission files
 
 // Routes
 app.use("/api/auth", require("./routes/auth"));

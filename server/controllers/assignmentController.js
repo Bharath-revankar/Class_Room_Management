@@ -31,7 +31,12 @@ exports.createAssignment = async (req, res) => {
 
 exports.getAssignments = async (req, res) => {
   try {
-    const assignments = await Assignment.find()
+    let query = {};
+    // Only filter for teachers; students and admins see all assignments
+    if (req.user.role === "teacher") {
+      query.teacher = req.user.userId;
+    }
+    const assignments = await Assignment.find(query)
       .populate("teacher", "username")
       .populate("submissions.student", "username");
     res.json(assignments);

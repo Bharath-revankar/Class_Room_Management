@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const role = payload.role;
   const username = payload.username;
   const dashboardContent = document.getElementById("dashboard-content");
+  const userInfo = document.getElementById("user-info");
+
+  userInfo.textContent = `Welcome, ${username} (${role})`;
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -20,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .content.cloneNode(true);
     dashboardContent.appendChild(template);
     loadAssignments();
-    setupChat();
 
     const announcementForm = document.getElementById("announcement-form");
     announcementForm.addEventListener("submit", async (e) => {
@@ -57,15 +59,16 @@ document.addEventListener("DOMContentLoaded", () => {
     loadAnnouncements();
     loadAssignments();
     loadMyGrades();
-    setupChat();
   } else if (role === "admin") {
     const template = document
       .getElementById("admin-dashboard")
       .content.cloneNode(true);
     dashboardContent.appendChild(template);
     loadUsers();
-    setupChat();
   }
+
+  // Setup chat for all roles
+  setupChat();
 
   function setupChat() {
     const socket = io();
@@ -166,21 +169,24 @@ document.addEventListener("DOMContentLoaded", () => {
         div.appendChild(form);
       } else if (role === "teacher") {
         const submissions = assignment.submissions
-          .map(
-            (sub) => `
-            <div>
-                Student: ${sub.student} | <a href="/${
-              sub.file
-            }" target="_blank">View Submission</a>
-                <input type="text" id="grade-${
-                  sub._id
-                }" placeholder="Grade" value="${sub.grade || ""}">
-                <button onclick="gradeSubmission('${assignment._id}', '${
-              sub._id
-            }')">Grade</button>
-            </div>
-        `
-          )
+          .map((sub) => {
+            if (!sub.student)
+              return "<div>Submission from a deleted user.</div>"; // Graceful handling
+            const filePath = sub.file.replace(/\\/g, "/"); // Normalize path for URL
+            return `
+                    <div>
+                        Student: ${
+                          sub.student.username
+                        } | <a href="/${filePath}" target="_blank">View Submission</a>
+                        <input type="text" id="grade-${
+                          sub._id
+                        }" placeholder="Grade" value="${sub.grade || ""}">
+                        <button onclick="gradeSubmission('${
+                          assignment._id
+                        }', '${sub._id}')">Grade</button>
+                    </div>
+                `;
+          })
           .join("");
         div.innerHTML += `<h5>Submissions:</h5>${
           submissions || "No submissions yet."
